@@ -44,8 +44,7 @@ public class Wheel : MonoBehaviour
 
     void Update()
     {
-        wheelAngle = Mathf.Lerp(wheelAngle, steerAngle,steerTime*Time.deltaTime);
-        this.transform.localRotation= Quaternion.Euler(Vector3.up*wheelAngle);
+        this.transform.localRotation= Quaternion.Euler(transform.localRotation.x,transform.localRotation.y+steerAngle,transform.localRotation.z);
     }
 
     void FixedUpdate()
