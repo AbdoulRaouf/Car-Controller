@@ -27,7 +27,10 @@ public class Wheel : MonoBehaviour
     private float sprinForce;
 
     private Vector3 suspensionForce;
+    private Vector3 wheelVelocityLS;
     private float wheelAngle;
+    private float Fx;
+    private float Fy;
 
     [Header("*----wheel----*")]
     [SerializeField] private float wheelRadius;
@@ -44,7 +47,11 @@ public class Wheel : MonoBehaviour
 
     void Update()
     {
-        this.transform.localRotation= Quaternion.Euler(transform.localRotation.x,transform.localRotation.y+steerAngle,transform.localRotation.z);
+        wheelAngle = Mathf.Lerp(wheelAngle, steerAngle, steerTime*Time.deltaTime);
+
+        this.transform.localRotation= Quaternion.Euler(Vector3.up*wheelAngle);
+
+        Debug.DrawRay(transform.position, -transform.up * (springLength + wheelRadius), Color.blue);
     }
 
     void FixedUpdate()
@@ -58,7 +65,13 @@ public class Wheel : MonoBehaviour
             dampingForce = dampingStiffness * springVelocity;
             suspensionForce = (sprinForce + dampingForce) * transform.up;
 
-            rb.AddForceAtPosition(suspensionForce, hit.point);
+            wheelVelocityLS =transform.InverseTransformDirection(rb.GetPointVelocity(hit.point));
+
+            Fx = Input.GetAxis("Vertical") * sprinForce;
+            Fy = wheelVelocityLS.x * sprinForce;
+
+            rb.AddForceAtPosition(suspensionForce + (transform.forward * Fx) + (Fy * - transform.right), hit.point);
         }
+        
     }
 }
